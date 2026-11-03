@@ -8,20 +8,40 @@ A planned local retrieval-augmented generation system for the supplied vLLM
 0.10.1 corpus. It will index source files, retrieve relevant character spans,
 and generate grounded answers with Qwen/Qwen3-0.6B.
 
-**Current status: architecture and interface prototypes only.** There is no
-working pipeline, CLI, dependency setup, or measured retrieval score yet.
+**Current status: development setup, validated data models and document reader implemented.**
+The RAG pipeline remains an interface prototype; retrieval and generation do not
+run yet, and no retrieval score has been measured.
 Replace the login placeholder before submission.
 
 ## Instructions
 
-Start with [the architecture and implementation roadmap](docs/ARQUITETURA.md)
-(in Portuguese). The files under `src/` are `.pyi` interface declarations, not
-implementations. Write the corresponding `.py` modules as you learn each stage.
+Read [the project review and next steps](docs/REVISAO.md) (in Portuguese).
+The models under `src/models/` are executable Python modules; remaining `.pyi`
+files declare services that still need implementation.
+`src/ingestion/reader.py` reads UTF-8 without changing line endings, validates
+that paths are within the project root and identifies Python/text documents.
 
-Dependency installation through `uv sync` and commands through
-`uv run python -m src <command>` will become available after project setup and
-implementation. The required configuration, lockfile and Makefile remain to be
-created. The supplied ZIP archives have not been extracted.
+Install Python 3.10+ and uv, then run:
+
+```sh
+make install
+make run ARGS=status
+make test
+make lint
+```
+
+`uv sync` installs the locked dependencies directly. `make debug ARGS=status`
+starts the available CLI in pdb. `make clean` removes Python and tooling caches.
+On restricted filesystems, use `UV_CACHE_DIR=.uv-cache uv sync`.
+The CLI currently exposes only `status`; pipeline commands are pending.
+The supplied vLLM corpus is extracted to `data/raw/vllm-0.10.1/` and the
+public datasets to `data/datasets/{AnsweredQuestions,UnansweredQuestions}/`.
+They contain 99 code and 100 documentation questions per scope. Local data is
+excluded from Git; a fresh clone must be populated from the supplied archives.
+The two standalone official evaluator binaries are in `tools/moulinette/`,
+also excluded from Git. They are separate from the application and have not
+been executed. See [the review](docs/REVISAO.md) for validation details.
+Model runtime dependencies will be selected when generation is implemented.
 
 ## System architecture
 
@@ -44,7 +64,7 @@ queries and documents, and deterministic ranking. This is not implemented yet.
 
 ## Performance analysis
 
-No measurements yet. Required targets: indexing within 5 minutes, retrieval of
+Model validation tests pass; full-corpus performance is not measured. Required targets: indexing within 5 minutes, retrieval of
 200 questions within 90 seconds, Recall@5 >= 80% for docs and >= 50% for code.
 
 ## Design decisions
@@ -55,7 +75,9 @@ for evaluation and must not be used as retrieval content.
 
 ## Challenges faced
 
-Implementation has not started. Anticipated challenges include exact corpus paths,
+Initial validation addressed malformed reference answers being discarded by union
+fallback, duplicate question IDs, invalid spans, and generation token budgets.
+Remaining challenges include exact corpus paths,
 Unicode character offsets, distinct chunking strategies and model token budgets.
 Record actual difficulties and solutions during development.
 
@@ -74,4 +96,7 @@ arguments and expected outputs.
 
 AI assistance was used to inspect the supplied requirements, propose the module
 architecture, write this planning documentation and declare interface prototypes.
-No algorithm implementations were generated in this scaffolding step.
+The continuation added dependency setup, validated Pydantic models, a status CLI,
+and validation tests with AI assistance. The document reader was implemented
+through guided development and reviewed with AI assistance. Retrieval and generation algorithms have
+not been implemented.

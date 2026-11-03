@@ -1,5 +1,6 @@
-"""Prototipos de models.evaluation; sem implementacao."""
+"""Modelos de evaluation."""
 from pydantic import BaseModel
+
 
 class EvaluationReport(BaseModel):
     """Recall medio por pergunta e cobertura dos IDs avaliados."""

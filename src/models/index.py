@@ -1,7 +1,8 @@
-"""Prototipos de models.index; sem implementacao."""
+"""Modelos de index."""
 from pathlib import Path
 from typing import Literal
 from pydantic import BaseModel
+
 
 class IndexManifest(BaseModel):
     """Metadados para detectar indices incompativeis ou desatualizados."""

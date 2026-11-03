@@ -1,7 +1,8 @@
-"""Prototipos de models.documents; sem implementacao."""
+"""Modelos de documents."""
 from typing import Literal
 from pydantic import BaseModel
 from src.models.source import MinimalSource
+
 
 class Document(BaseModel):
     """Texto original, sem limpeza ou normalizacao de quebras de linha."""

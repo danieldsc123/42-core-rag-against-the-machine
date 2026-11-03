@@ -1,0 +1,20 @@
+[project]
+name = "rag-against-the-machine"
+version = "0.1.0"
+description = "Local retrieval-augmented generation for the vLLM corpus"
+requires-python = ">=3.10"
+dependencies = ["pydantic>=2.9,<3", "fire>=0.7,<1", "tqdm>=4.66,<5", "typing-extensions>=4.12,<5"]
+
+[dependency-groups]
+dev = ["flake8>=7,<8", "mypy>=1.13,<2", "pytest>=8,<10"]
+
+[tool.uv]
+package = false
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+exclude = ["^data/", "^tools/"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
