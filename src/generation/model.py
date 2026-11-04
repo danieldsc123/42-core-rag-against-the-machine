@@ -2,7 +2,7 @@
 import gc
 import json
 import os
-from typing import Any
+from typing import Any, cast
 
 from src.models.documents import Chunk
 from src.models.generation import GenerationConfig
@@ -44,7 +44,7 @@ class LocalGenerator:
         model = AutoModelForCausalLM.from_pretrained(
             self.config.model_name, dtype='auto', trust_remote_code=False
         )
-        model.to(self.config.device)
+        cast(Any, model).to(self.config.device)
         model.eval()
         limit = int(getattr(model.config, 'max_position_embeddings',
                             self.config.context_window_tokens))
@@ -138,7 +138,8 @@ class LocalGenerator:
         with torch.inference_mode():
             output = self.model.generate(
                 **inputs, max_new_tokens=self.config.max_new_tokens,
-                do_sample=False, pad_token_id=self.tokenizer.eos_token_id,
+                do_sample=False, temperature=None, top_p=None, top_k=None,
+                pad_token_id=self.tokenizer.eos_token_id,
             )
         continuation = output[0, input_length:]
         answer = str(self.tokenizer.decode(
