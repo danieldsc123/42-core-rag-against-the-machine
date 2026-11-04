@@ -115,3 +115,17 @@ Validação: 88 testes e lint. No corpus, foram verificados 1.763 arquivos Pytho
 e intervalos contíguos de até 2.000 caracteres, em aproximadamente 5,17 segundos
 neste ambiente. Isso mede leitura/chunking, não indexação nem recall; a quantidade
 e o tamanho dos chunks ainda poderão ser ajustados após medir a busca.
+
+## Pipeline obrigatório implementado — 04/11/2026
+
+Esta seção atualiza o estado histórico descrito acima: não restam protótipos
+pendentes nos módulos do obrigatório. Foram implementados tokenização, índices
+TF-IDF/BM25, persistência, indexação, armazenamento, busca, recall, geração Qwen
+e os seis comandos Fire, com commit e push a cada função concluída.
+
+A validação atual e as limitações estão em [VALIDACAO.md](VALIDACAO.md).
+102 testes e lint passam. A moulinette aceitou os resultados públicos, com
+Recall@5 de 84% em docs e 84,85% em código. Indexação padrão: 11,23 segundos;
+200 consultas: 0,41 segundo com índice carregado. A geração foi exercitada com
+pesos Qwen reais, em consulta única e amostra em lote; a qualidade final depende
+da revisão humana com a régua. README foi reescrito em inglês para o estado atual.

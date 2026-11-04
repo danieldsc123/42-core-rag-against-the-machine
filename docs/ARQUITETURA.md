@@ -4,12 +4,10 @@ Estrutura conferida com o subject RAG against the machine, versão 2.0,
 especialmente capítulos V, VI, VII e VIII. O subject é referência de requisitos;
 a divisão interna abaixo é uma decisão de organização do projeto.
 
-Todos os módulos planejados para o obrigatório já existem como `.py`. Não é
-necessário criar um arquivo novo para cada etapa deste roteiro. Os modelos e
-o leitor, a descoberta de arquivos, os caminhos e o chunking estão implementados;
-os demais serviços têm protótipos executáveis que
-levantam `NotImplementedError`. Isso sinaliza trabalho pendente, não uma solução
-funcional. Para implementar, substitua esse `raise` pelo corpo da função.
+Todos os módulos do obrigatório estão implementados como `.py`. Não há
+protótipos pendentes. A CLI expõe os seis comandos exigidos e mantém `status`
+como comando auxiliar. Os resultados medidos e limites da verificação estão
+em [VALIDACAO.md](VALIDACAO.md).
 
 ## Fluxo e dependências
 
@@ -32,7 +30,7 @@ flowchart TD
 Busca e avaliação não carregam modelos gerativos. O gabarito é exclusivo da
 avaliação: não alimentar o índice ou o ranking com respostas de referência.
 
-## Mapa dos arquivos e ordem de trabalho
+## Mapa dos arquivos
 
 | Etapa | Arquivo em `src/` | Responsabilidade | Estado |
 | --- | --- | --- | --- |
@@ -49,20 +47,20 @@ avaliação: não alimentar o índice ou o ranking com respostas de referência.
 | 4 | `chunking/spans.py` | Subdividir intervalos e validar chunks | Implementado |
 | 5 | `chunking/text.py` | Separar Markdown/texto por seções e parágrafos | Implementado |
 | 6 | `chunking/python.py` | Separar código por limites sintáticos | Implementado |
-| 7 | `indexing/tokenizer.py` | Tokenização comum a documentos e consultas | Protótipo |
-| 8 | `indexing/lexical.py` | Construir, consultar, salvar e carregar índice | Protótipo |
-| 9 | `indexing/pipeline.py` | Coordenar ingestão, chunks e índice com tqdm | Protótipo |
-| 10 | `storage/datasets.py` | Ler e validar datasets | Protótipo |
-| 10 | `storage/paths.py` | Definir nome da saída de um dataset | Protótipo |
-| 10 | `storage/results.py` | Ler resultados e gravar JSON sem arquivo parcial | Protótipo |
-| 11 | `retrieval/service.py` | Busca única e por dataset, preservando IDs | Protótipo |
-| 12 | `evaluation/metrics.py` | IoU e recall por pergunta | Protótipo |
-| 12 | `evaluation/service.py` | Parear IDs e calcular médias de recall | Protótipo |
-| 13 | `storage/sources.py` | Ler slices com caminho e offsets validados | Protótipo |
-| 14 | `generation/model.py` | Carregar Qwen e preparar contexto no budget | Protótipo |
-| 15 | `generation/pipeline.py` | Gerar respostas sobre resultados existentes | Protótipo |
-| Gradual | `cli/commands.py` | Coordenar os seis comandos Fire | Protótipo |
-| Entrada | `__main__.py` | Entrada `python -m src` | Somente status |
+| 7 | `indexing/tokenizer.py` | Tokenização comum a documentos e consultas | Implementado |
+| 8 | `indexing/lexical.py` | Construir, consultar, salvar e carregar índice | Implementado |
+| 9 | `indexing/pipeline.py` | Coordenar ingestão, chunks e índice com tqdm | Implementado |
+| 10 | `storage/datasets.py` | Ler e validar datasets | Implementado |
+| 10 | `storage/paths.py` | Definir nome da saída de um dataset | Implementado |
+| 10 | `storage/results.py` | Ler resultados e gravar JSON sem arquivo parcial | Implementado |
+| 11 | `retrieval/service.py` | Busca única e por dataset, preservando IDs | Implementado |
+| 12 | `evaluation/metrics.py` | IoU e recall por pergunta | Implementado |
+| 12 | `evaluation/service.py` | Parear IDs e calcular médias de recall | Implementado |
+| 13 | `storage/sources.py` | Ler slices com caminho e offsets validados | Implementado |
+| 14 | `generation/model.py` | Carregar Qwen e preparar contexto no budget | Implementado |
+| 15 | `generation/pipeline.py` | Gerar respostas sobre resultados existentes | Implementado |
+| Gradual | `cli/commands.py` | Coordenar os seis comandos Fire | Implementado |
+| Entrada | `__main__.py` | Entrada `python -m src` | Implementado |
 
 Os `__init__.py` identificam os pacotes. Os `.pyi` foram removidos para que
 assinaturas não precisem ser mantidas em dois lugares. O leitor delega a `ingestion/paths.py` o cálculo do caminho relativo.
@@ -79,12 +77,11 @@ assinaturas não precisem ser mantidas em dois lugares. O leitor delega a `inges
 - Python e Markdown/texto precisam de estratégias distintas. Cobrir também
   imports, constantes, blocos enormes e Python com erro de sintaxe. Posições de
   colunas AST podem ser bytes UTF-8: não confundir com índices de caracteres.
-- Implementar pelo menos TF-IDF ou BM25. Proposta inicial: TF-IDF esparso,
-  tokenização compartilhada e desempate determinístico. Bibliotecas do índice
-  serão selecionadas durante sua implementação.
+- Implementar pelo menos TF-IDF ou BM25. BM25 é o padrão; TF-IDF também está disponível, com
+  tokenização compartilhada e desempate determinístico. O índice usa NumPy e SciPy.
 - Persistir em `data/processed/`; carregar uma vez para buscas em lote.
 - `answer_dataset` consome buscas já salvas, sem repetir retrieval. Carregar
-  Qwen/Qwen3-0.6B uma vez por lote. Selecionar dependências de geração nessa etapa.
+  Qwen/Qwen3-0.6B uma vez por lote. A geração usa Transformers e PyTorch CPU.
 - Contar tokens com o tokenizer real, incluindo template e reserva de saída.
   Conteúdo recuperado é evidência, não instrução para executar ações.
 - Construir o JSON final com os modelos Pydantic, preservando IDs e `k`.
@@ -94,7 +91,7 @@ assinaturas não precisem ser mantidas em dois lugares. O leitor delega a `inges
 - A avaliação própria usa IoU 0,05 no mesmo caminho e média por pergunta.
   Nunca importar ou chamar a moulinette a partir da aplicação.
 
-## Interface final planejada
+## Interface implementada
 
 Todos os caminhos de entrada/saída são configuráveis pelos argumentos já
 declarados em `cli/commands.py`.
@@ -108,8 +105,8 @@ declarados em `cli/commands.py`.
 | `answer_dataset` | `--student_search_results_path`, `--save_directory` |
 | `evaluate` | `--student_search_results_path`, `--dataset_path` |
 
-Conectar os comandos ao Fire conforme os serviços forem implementados, com
-tratamento de erros na fronteira da CLI. Por enquanto apenas `status` é exposto.
+Os comandos estão conectados ao Fire. Erros são tratados na fronteira da CLI,
+com status de saída não zero e mensagem legível, sem traceback não tratado.
 
 ## Diretórios e verificação
 
@@ -130,7 +127,6 @@ locais já estão preparados. Os testes atuais estão prontos para receber novos
 casos; arquivos adicionais de teste podem ser criados se ajudarem a organização.
 
 Após cada implementação: verificar o comportamento e executar `make test` e
-`make lint`. Passar esses checks enquanto os serviços são protótipos não
-significa atender o obrigatório. As metas finais precisam de medição no corpus:
+`make lint`. Os checks não substituem a avaliação funcional. As metas medidas no corpus são:
 indexação até 5 minutos, 200 buscas até 90 segundos, Recall@5 de docs >= 80% e
 de código >= 50%. Bônus ficam para depois do obrigatório.
