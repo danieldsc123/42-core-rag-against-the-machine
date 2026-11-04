@@ -44,7 +44,11 @@ class RagCLI:
         save_path: str = 'data/output/search_results/single.json',
     ) -> Path:
         """Buscar uma pergunta e salvar StudentSearchResults."""
-        raise NotImplementedError('Implementar: search')
+        index = LexicalIndex.load(Path(index_directory))
+        result = search_question(UnansweredQuestion(question=query), index, k)
+        return write_results(
+            StudentSearchResults(search_results=[result], k=k), Path(save_path)
+        )
 
     def search_dataset(
         self,
