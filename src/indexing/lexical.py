@@ -169,4 +169,49 @@ class LexicalIndex:
         directory: Path,
     ) -> 'LexicalIndex':
         """Validar e carregar indice construido pelo proprio projeto."""
-        raise NotImplementedError('Implementar: load')
+        name = (directory / 'CURRENT').read_text().strip()
+        if not name.startswith('snapshot-') or Path(name).name != name:
+            raise ValueError('invalid index snapshot pointer')
+        snapshot = directory / name
+        files = ['manifest.json', 'chunks.jsonl', 'vocabulary.json',
+                 'matrix.npz', 'idf.npy']
+        hashes = json.loads((snapshot / 'checksums.json').read_text())
+        for name in files:
+            digest = hashlib.sha256((snapshot / name).read_bytes()).hexdigest()
+            if hashes.get(name) != digest:
+                raise ValueError(f'index checksum mismatch: {name}')
+        manifest = IndexManifest.model_validate_json(
+            (snapshot / 'manifest.json').read_text(encoding='utf-8')
+        )
+        if (manifest.format_version != '1'
+                or manifest.tokenizer_version != TOKENIZER_VERSION):
+            raise ValueError('incompatible index; rebuild it')
+        index = cls(manifest.method)
+        with (snapshot / 'chunks.jsonl').open(encoding='utf-8') as f:
+            index.chunks = [Chunk.model_validate_json(line) for line in f]
+        vocabulary = json.loads(
+            (snapshot / 'vocabulary.json').read_text(encoding='utf-8')
+        )
+        if (not isinstance(vocabulary, dict)
+                or not all(isinstance(t, str) and type(i) is int
+                           for t, i in vocabulary.items())
+                or set(vocabulary.values()) != set(range(len(vocabulary)))):
+            raise ValueError('invalid index vocabulary')
+        index.vocabulary = vocabulary
+        index.matrix = sparse.load_npz(snapshot / 'matrix.npz').tocsr()
+        index.idf = np.load(snapshot / 'idf.npy', allow_pickle=False)
+        if (len(index.chunks) != manifest.chunk_count
+                or index.matrix.shape != (len(index.chunks), len(vocabulary))
+                or index.idf.shape != (len(vocabulary),)
+                or not np.isfinite(index.matrix.data).all()
+                or not np.isfinite(index.idf).all()
+                or (index.matrix.data < 0).any()
+                or len({c.chunk_id for c in index.chunks}) != len(index.chunks)):
+            raise ValueError('invalid index dimensions or weights')
+        for chunk in index.chunks:
+            size = (chunk.source.last_character_index
+                    - chunk.source.first_character_index)
+            if size > 2000 or len(chunk.text) != size:
+                raise ValueError('invalid chunk in saved index')
+        index.manifest = manifest
+        return index
