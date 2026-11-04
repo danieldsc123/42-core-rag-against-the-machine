@@ -16,8 +16,22 @@ def status() -> str:
 
 
 def main() -> None:
-    """Run available commands; pipeline commands are not implemented yet."""
-    fire.Fire({"status": status})
+    """Dispatch commands and report failures without unhandled tracebacks."""
+    cli = RagCLI()
+    commands = {
+        'index': cli.index, 'search': cli.search,
+        'search_dataset': cli.search_dataset, 'answer': cli.answer,
+        'answer_dataset': cli.answer_dataset, 'evaluate': cli.evaluate,
+        'status': status,
+    }
+    try:
+        fire.Fire(commands)
+    except KeyboardInterrupt:
+        print('Interrupted.', file=sys.stderr)
+        raise SystemExit(130) from None
+    except Exception as exc:
+        print(f'Error: {exc}', file=sys.stderr)
+        raise SystemExit(1) from None
 
 
 if __name__ == "__main__":
