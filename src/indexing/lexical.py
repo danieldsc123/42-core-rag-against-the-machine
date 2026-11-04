@@ -1,4 +1,8 @@
 """Sparse TF-IDF/BM25 index with validated, pickle-free snapshots."""
+import hashlib
+import json
+import shutil
+import tempfile
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -118,7 +122,46 @@ class LexicalIndex:
         manifest: IndexManifest,
     ) -> None:
         """Persistir chunks, vocabulario, estrutura de busca e manifesto."""
-        raise NotImplementedError('Implementar: save')
+        if not self.chunks:
+            raise ValueError('cannot save an unbuilt index')
+        if (manifest.chunk_count != len(self.chunks)
+                or manifest.method != self.method
+                or manifest.tokenizer_version != TOKENIZER_VERSION
+                or manifest.format_version != '1'):
+            raise ValueError('manifest does not describe this index')
+        directory.mkdir(parents=True, exist_ok=True)
+        snapshot = Path(tempfile.mkdtemp(prefix='snapshot-', dir=directory))
+        pointer: Path | None = None
+        try:
+            (snapshot / 'manifest.json').write_text(
+                manifest.model_dump_json(), encoding='utf-8'
+            )
+            with (snapshot / 'chunks.jsonl').open('w', encoding='utf-8') as f:
+                for chunk in self.chunks:
+                    f.write(chunk.model_dump_json() + '\n')
+            (snapshot / 'vocabulary.json').write_text(
+                json.dumps(self.vocabulary), encoding='utf-8'
+            )
+            sparse.save_npz(snapshot / 'matrix.npz', self.matrix)
+            np.save(snapshot / 'idf.npy', self.idf, allow_pickle=False)
+            hashes = {
+                p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in snapshot.iterdir()
+            }
+            (snapshot / 'checksums.json').write_text(json.dumps(hashes))
+            with tempfile.NamedTemporaryFile(
+                mode='w', dir=directory, delete=False, prefix='.CURRENT-'
+            ) as f:
+                pointer = Path(f.name)
+                f.write(snapshot.name)
+            pointer.replace(directory / 'CURRENT')
+            self.manifest = manifest
+        except Exception:
+            shutil.rmtree(snapshot)
+            raise
+        finally:
+            if pointer is not None:
+                pointer.unlink(missing_ok=True)
 
     @classmethod
     def load(
