@@ -1,5 +1,18 @@
-"""Prototipos de cli.commands; sem implementacao."""
+"""Python Fire commands coordinating the local RAG pipeline."""
 from pathlib import Path
+
+from src.evaluation.service import evaluate_results
+from src.generation.model import LocalGenerator
+from src.generation.pipeline import answer_dataset, answer_search_result
+from src.indexing.lexical import LexicalIndex
+from src.indexing.pipeline import build_index
+from src.models.generation import GenerationConfig
+from src.models.questions import UnansweredQuestion
+from src.models.results import StudentSearchResults
+from src.retrieval.service import search_dataset, search_question
+from src.storage.datasets import load_dataset
+from src.storage.paths import dataset_output_path
+from src.storage.results import load_search_results, write_results
 
 
 class RagCLI:
@@ -11,10 +24,17 @@ class RagCLI:
         corpus_path: str = 'data/raw',
         index_directory: str = 'data/processed',
         project_root: str = '.',
-        method: str = 'tfidf',
+        method: str = 'bm25',
     ) -> None:
         """Construir indice e exibir resumo."""
-        raise NotImplementedError('Implementar: index')
+        root = Path(project_root)
+        corpus = Path(corpus_path)
+        if not corpus.is_absolute():
+            corpus = root / corpus
+        report = build_index(
+            corpus, Path(index_directory), root, max_chunk_size, method
+        )
+        print(report.model_dump_json(indent=2))
 
     def search(
         self,
