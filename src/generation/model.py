@@ -58,7 +58,8 @@ class LocalGenerator:
         text: str,
     ) -> int:
         """Contar tokens com o tokenizer do modelo gerativo."""
-        raise NotImplementedError('Implementar: count_tokens')
+        self.load()
+        return len(self.tokenizer.encode(text, add_special_tokens=False))
 
     def prepare_prompt(
         self,
