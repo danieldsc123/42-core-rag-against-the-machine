@@ -58,7 +58,12 @@ class RagCLI:
         index_directory: str = 'data/processed',
     ) -> Path:
         """Buscar dataset e salvar JSON com nome de entrada."""
-        raise NotImplementedError('Implementar: search_dataset')
+        path = Path(dataset_path)
+        dataset = load_dataset(path)
+        index = LexicalIndex.load(Path(index_directory))
+        results = search_dataset(dataset, index, k)
+        output = dataset_output_path(path, Path(save_directory))
+        return write_results(results, output)
 
     def answer(
         self,
