@@ -2,6 +2,7 @@
 from pathlib import Path
 from typing import Literal
 
+from src.ingestion.paths import canonical_source_path
 from src.models.documents import Document
 
 
@@ -9,8 +10,7 @@ def read_document(file_path: Path, project_root: Path) -> Document:
     """Ler UTF-8 preservando caracteres e quebras de linha originais."""
 
     resolved_file = file_path.resolve()
-    resolved_root = project_root.resolve()
-    relative_path = resolved_file.relative_to(resolved_root).as_posix()
+    relative_path = canonical_source_path(resolved_file, project_root)
 
     with open(resolved_file, "r", encoding="utf-8", newline="") as file:
         content = file.read()
