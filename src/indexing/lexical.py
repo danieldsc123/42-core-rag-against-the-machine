@@ -1,5 +1,11 @@
-"""Prototipos de indexing.lexical; sem implementacao."""
+"""Sparse TF-IDF/BM25 index with validated, pickle-free snapshots."""
 from pathlib import Path
+from typing import Any
+
+import numpy as np
+from scipy import sparse
+
+from src.indexing.tokenizer import tokenize, TOKENIZER_VERSION
 from src.models.documents import Chunk
 from src.models.index import IndexManifest
 from src.models.documents import RankedChunk
@@ -10,10 +16,17 @@ class LexicalIndex:
 
     def __init__(
         self,
-        method: str = 'tfidf',
+        method: str = 'bm25',
     ) -> None:
         """Validar metodo escolhido; nenhum modelo gerativo aqui."""
-        raise NotImplementedError('Implementar: __init__')
+        if method not in ('tfidf', 'bm25'):
+            raise ValueError('method must be tfidf or bm25')
+        self.method = method
+        self.chunks: list[Chunk] = []
+        self.vocabulary: dict[str, int] = {}
+        self.matrix: Any = sparse.csr_matrix((0, 0), dtype=np.float64)
+        self.idf: Any = np.array([], dtype=np.float64)
+        self.manifest: IndexManifest | None = None
 
     def build(
         self,
