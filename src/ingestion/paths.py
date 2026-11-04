@@ -1,4 +1,4 @@
-"""Prototipos de ingestion.paths; sem implementacao."""
+"""Conversão dos caminhos do corpus para caminhos relativos."""
 from pathlib import Path
 
 
@@ -6,5 +6,9 @@ def canonical_source_path(
     file_path: Path,
     project_root: Path,
 ) -> str:
-    """Produzir caminho relativo com /, igual ao prefixo esperado no corpus."""
-    raise NotImplementedError('Implementar: canonical_source_path')
+    """Conversão dos caminhos do corpus para caminhos relativos."""
+
+    resolved_file = file_path.resolve()
+    resolved_root = project_root.resolve()
+
+    return resolved_file.relative_to(resolved_root).as_posix()
