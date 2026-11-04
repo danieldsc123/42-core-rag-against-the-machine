@@ -16,8 +16,9 @@ Replace the login placeholder before submission.
 ## Instructions
 
 Read [the project review and next steps](docs/REVISAO.md) (in Portuguese).
-The models under `src/models/` are executable Python modules; remaining `.pyi`
-files declare services that still need implementation.
+All planned modules are now `.py` files. Models and the document reader are
+implemented; pending services contain typed prototypes that raise
+`NotImplementedError`. See [the architecture and implementation order](docs/ARQUITETURA.md).
 `src/ingestion/reader.py` reads UTF-8 without changing line endings, validates
 that paths are within the project root and identifies Python/text documents.
 

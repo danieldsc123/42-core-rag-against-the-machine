@@ -5,11 +5,20 @@ from src.models.questions import RagDataset
 from src.models.results import StudentSearchResults
 from src.models.questions import UnansweredQuestion
 
-def search_question(question: UnansweredQuestion, index: LexicalIndex, k: int) -> MinimalSearchResults:
+
+def search_question(
+    question: UnansweredQuestion,
+    index: LexicalIndex,
+    k: int,
+) -> MinimalSearchResults:
     """Converter ranking em fontes validas de ate 2000 caracteres."""
-    ...
+    raise NotImplementedError('Implementar: search_question')
 
 
-def search_dataset(dataset: RagDataset, index: LexicalIndex, k: int) -> StudentSearchResults:
+def search_dataset(
+    dataset: RagDataset,
+    index: LexicalIndex,
+    k: int,
+) -> StudentSearchResults:
     """Usar somente question_id e question, com indice carregado uma vez."""
-    ...
+    raise NotImplementedError('Implementar: search_dataset')

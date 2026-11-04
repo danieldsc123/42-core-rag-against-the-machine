@@ -5,8 +5,8 @@ import fire
 def status() -> str:
     """Report which project components are currently implemented."""
     return (
-        "Implemented: validated Pydantic data models and development setup. "
-        "Pending: ingestion, chunking, index, retrieval, generation "
+        "Implemented: validated data models, document reader and setup. "
+        "Pending: file discovery, chunking, index, retrieval, generation "
         "and evaluation."
     )
 

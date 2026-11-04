@@ -93,3 +93,11 @@ O mypy agora exclui `data/` e `tools/`, evitando analisar o corpus de terceiros.
 Validação atual: 19 testes passam, incluindo três casos do leitor; flake8 e
 mypy passam. Os demais serviços continuam como contratos, sem pipeline RAG
 executável ou métricas de recall.
+
+## Preparação da arquitetura para implementação guiada — 04/11/2026
+
+Todos os contratos pendentes foram convertidos de `.pyi` para `.py`, com
+assinaturas, docstrings e `NotImplementedError`. Implementações existentes foram
+preservadas. Os serviços continuam pendentes; o novo mapa em ARQUITETURA.md
+relaciona os módulos aos requisitos e define a ordem de implementação.
+Esta seção atualiza as referências históricas a serviços mantidos como `.pyi`.
