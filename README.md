@@ -54,9 +54,10 @@ of search results and reference answers. Each functionality has its own folder u
 
 ## Chunking strategy
 
-Planned: use Python syntax boundaries for code and headings/paragraphs for text,
-with subdivision of oversized spans. Preserve original character offsets and
-limit every returned source to at most 2000 characters.
+Implemented for text: paragraph boundaries, ATX/Setext Markdown headings and
+fenced code blocks, with subdivision of oversized spans. Original character
+offsets are preserved and chunks are limited to at most 2000 characters.
+Python syntax chunking remains pending.
 
 ## Retrieval method
 

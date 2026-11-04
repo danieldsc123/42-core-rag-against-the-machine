@@ -43,10 +43,10 @@ avaliação: não alimentar o índice ou o ranking com respostas de referência.
 | Base | `models/generation.py` | Configuração e prompt preparado | Implementado |
 | Base | `models/evaluation.py` | Relatório de recall | Implementado |
 | 1 | `ingestion/reader.py` | Ler texto sem alterar caracteres | Implementado |
-| 2 | `ingestion/discovery.py` | Descobrir arquivos relevantes em ordem estável | Protótipo |
-| 3 | `ingestion/paths.py` | Centralizar caminho relativo POSIX | Protótipo |
-| 4 | `chunking/spans.py` | Subdividir intervalos e validar chunks | Protótipo |
-| 5 | `chunking/text.py` | Separar Markdown/texto por seções e parágrafos | Protótipo |
+| 2 | `ingestion/discovery.py` | Descobrir arquivos relevantes em ordem estável | Implementado |
+| 3 | `ingestion/paths.py` | Centralizar caminho relativo POSIX | Implementado |
+| 4 | `chunking/spans.py` | Subdividir intervalos e validar chunks | Implementado |
+| 5 | `chunking/text.py` | Separar Markdown/texto por seções e parágrafos | Implementado |
 | 6 | `chunking/python.py` | Separar código por limites sintáticos | Protótipo |
 | 7 | `indexing/tokenizer.py` | Tokenização comum a documentos e consultas | Protótipo |
 | 8 | `indexing/lexical.py` | Construir, consultar, salvar e carregar índice | Protótipo |
@@ -64,9 +64,7 @@ avaliação: não alimentar o índice ou o ranking com respostas de referência.
 | Entrada | `__main__.py` | Entrada `python -m src` | Somente status |
 
 Os `__init__.py` identificam os pacotes. Os `.pyi` foram removidos para que
-assinaturas não precisem ser mantidas em dois lugares. Quando `paths.py` estiver
-implementado, o leitor deverá delegar a ele o cálculo do caminho relativo.
-Não fazer essa ligação antes de implementar o helper.
+assinaturas não precisem ser mantidas em dois lugares. O leitor delega a `ingestion/paths.py` o cálculo do caminho relativo.
 
 ## Contratos que precisam ser preservados
 
