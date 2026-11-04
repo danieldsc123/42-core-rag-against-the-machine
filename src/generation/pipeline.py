@@ -1,6 +1,8 @@
 """Answer previously retrieved evidence with a reusable local generator."""
 from pathlib import Path
 
+from tqdm import tqdm
+
 from src.generation.model import LocalGenerator
 from src.models.documents import Chunk
 from src.storage.sources import read_source
@@ -44,4 +46,9 @@ def answer_dataset(
     project_root: str,
 ) -> StudentSearchResultsAndAnswer:
     """Reutilizar gerador e mostrar progresso, preservando IDs e k."""
-    raise NotImplementedError('Implementar: answer_dataset')
+    answers = [
+        answer_search_result(result, generator, project_root)
+        for result in tqdm(results.search_results, desc='Answering',
+                           unit='question')
+    ]
+    return StudentSearchResultsAndAnswer(search_results=answers, k=results.k)
