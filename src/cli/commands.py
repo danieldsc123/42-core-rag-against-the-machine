@@ -8,7 +8,9 @@ from src.indexing.lexical import LexicalIndex
 from src.indexing.pipeline import build_index
 from src.models.generation import GenerationConfig
 from src.models.questions import UnansweredQuestion
-from src.models.results import StudentSearchResults
+from src.models.results import (
+    StudentSearchResults, StudentSearchResultsAndAnswer,
+)
 from src.retrieval.service import search_dataset, search_question
 from src.storage.datasets import load_dataset
 from src.storage.paths import dataset_output_path
@@ -78,7 +80,20 @@ class RagCLI:
         save_path: str = 'data/output/search_results_and_answer/single.json',
     ) -> Path:
         """Buscar, preparar contexto, gerar e salvar resposta unica."""
-        raise NotImplementedError('Implementar: answer')
+        index = LexicalIndex.load(Path(index_directory))
+        result = search_question(UnansweredQuestion(question=query), index, k)
+        config = GenerationConfig(
+            model_name=model_name, context_window_tokens=context_window_tokens,
+            max_new_tokens=max_new_tokens, device=device,
+        )
+        generator = LocalGenerator(config)
+        try:
+            answer = answer_search_result(result, generator, project_root)
+        finally:
+            generator.close()
+        return write_results(StudentSearchResultsAndAnswer(
+            search_results=[answer], k=k
+        ), Path(save_path))
 
     def answer_dataset(
         self,
