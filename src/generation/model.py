@@ -151,4 +151,10 @@ class LocalGenerator:
         self,
     ) -> None:
         """Liberar recursos quando necessario."""
-        raise NotImplementedError('Implementar: close')
+        had_model = self.model is not None
+        self.model = None
+        self.tokenizer = None
+        gc.collect()
+        if had_model and self.config.device.startswith('cuda'):
+            import torch
+            torch.cuda.empty_cache()
