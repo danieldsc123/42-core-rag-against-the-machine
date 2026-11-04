@@ -126,4 +126,8 @@ class RagCLI:
         save_path: str = 'data/output/evaluation/report.json',
     ) -> Path:
         """Calcular e salvar relatorio proprio de recall."""
-        raise NotImplementedError('Implementar: evaluate')
+        results = load_search_results(Path(student_search_results_path))
+        dataset = load_dataset(Path(dataset_path))
+        report = evaluate_results(results, dataset)
+        print(report.model_dump_json(indent=2))
+        return write_results(report, Path(save_path))
