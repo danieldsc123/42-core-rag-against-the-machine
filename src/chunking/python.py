@@ -35,7 +35,7 @@ def chunk_python(
     boundaries = {0, len(text)}
 
     def collect_boundaries(node: ast.AST) -> None:
-        """Keep small definitions whole and inspect children of large ones."""
+        """Preservar definições pequenas e examinar as maiores."""
         if isinstance(node, ast.stmt):
             first_line = node.lineno
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef,

@@ -1,1 +1,1 @@
-"""Contratos da funcionalidade cli."""
+"""Interface de linha de comando."""

@@ -1,1 +1,1 @@
-"""Contratos da funcionalidade storage."""
+"""Leitura e gravação dos dados do projeto."""

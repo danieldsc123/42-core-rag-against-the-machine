@@ -1,4 +1,4 @@
-"""Check evaluator contracts and dangerous validation edge cases."""
+"""Verificar contratos do avaliador e casos extremos de validação."""
 import json
 from uuid import UUID
 
@@ -14,7 +14,7 @@ from src.models.source import MinimalSource
 
 
 def source(start: int = 0, end: int = 12) -> MinimalSource:
-    """Build a representative corpus source."""
+    """Criar uma fonte representativa do corpus."""
     return MinimalSource(
         file_path="data/raw/vllm-0.10.1/docs/features/lora.md",
         first_character_index=start,
@@ -23,7 +23,7 @@ def source(start: int = 0, end: int = 12) -> MinimalSource:
 
 
 def test_question_uuid_and_reference_fields() -> None:
-    """Generate independent IDs and preserve answers in dataset unions."""
+    """Gerar IDs independentes e preservar respostas nas uniões do dataset."""
     first = UnansweredQuestion(question="What is LoRA?")
     second = UnansweredQuestion(question="What is LoRA?")
     assert UUID(first.question_id)
@@ -44,7 +44,7 @@ def test_question_uuid_and_reference_fields() -> None:
 def test_malformed_reference_cannot_become_unanswered(
     fields: dict[str, object],
 ) -> None:
-    """A union must not silently discard invalid reference data."""
+    """Impedir que a união descarte silenciosamente gabaritos inválidos."""
     with pytest.raises(ValidationError):
         RagDataset.model_validate({
             "rag_questions": [{"question": "Why?", **fields}]
@@ -52,7 +52,7 @@ def test_malformed_reference_cannot_become_unanswered(
 
 
 def test_duplicate_ids_are_rejected() -> None:
-    """Matching datasets by ID requires unambiguous identifiers."""
+    """Exigir identificadores únicos para associar perguntas pelo ID."""
     with pytest.raises(ValidationError):
         RagDataset(rag_questions=[
             UnansweredQuestion(question_id="same", question="First?"),
@@ -64,7 +64,7 @@ def test_duplicate_ids_are_rejected() -> None:
     "/etc/passwd", "../secret", "a/../../b", "C:/file", "a\\b", "",
 ])
 def test_non_corpus_paths_are_rejected(path: str) -> None:
-    """Require portable relative locations before filesystem access exists."""
+    """Exigir caminhos relativos portáveis antes do acesso aos arquivos."""
     with pytest.raises(ValidationError):
         MinimalSource(
             file_path=path, first_character_index=0, last_character_index=1
@@ -73,13 +73,13 @@ def test_non_corpus_paths_are_rejected(path: str) -> None:
 
 @pytest.mark.parametrize("start,end", [(-1, 2), (2, 2), (3, 1)])
 def test_invalid_ranges_are_rejected(start: int, end: int) -> None:
-    """A source must describe a nonempty forward slice."""
+    """Exigir que a fonte descreva um intervalo crescente e não vazio."""
     with pytest.raises(ValidationError):
         source(start, end)
 
 
 def test_reference_spans_may_exceed_retrieval_limit() -> None:
-    """Do not apply the 2000-character output limit to reference answers."""
+    """Permitir gabaritos maiores que o limite de 2000 caracteres da busca."""
     reference = source(end=3000)
     with pytest.raises(ValidationError):
         MinimalSearchResults(
@@ -97,7 +97,7 @@ def test_reference_spans_may_exceed_retrieval_limit() -> None:
 
 
 def test_invalid_generation_budget_is_rejected() -> None:
-    """Output tokens cannot consume the entire context window."""
+    """Impedir que os tokens da saída ocupem toda a janela de contexto."""
     assert GenerationConfig().model_name == "Qwen/Qwen3-0.6B"
     with pytest.raises(ValidationError):
         GenerationConfig(context_window_tokens=512, max_new_tokens=512)

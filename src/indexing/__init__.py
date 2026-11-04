@@ -1,1 +1,1 @@
-"""Contratos da funcionalidade indexing."""
+"""Construção e consulta de índices lexicais."""

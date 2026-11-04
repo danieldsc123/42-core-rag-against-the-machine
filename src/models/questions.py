@@ -1,4 +1,4 @@
-"""Modelos de questions."""
+"""Modelos de perguntas e datasets."""
 from uuid import uuid4
 from typing_extensions import Self
 from pydantic import BaseModel, Field, model_validator
@@ -14,19 +14,19 @@ class UnansweredQuestion(BaseModel):
 
 
 class AnsweredQuestion(UnansweredQuestion):
-    """Gabarito usado apenas na avaliacao."""
+    """Gabarito usado apenas na avaliação."""
     sources: list[MinimalSource]
     answer: str
 
 
 class RagDataset(BaseModel):
-    """Preservar os campos do gabarito ao validar a uniao."""
+    """Preservar os campos do gabarito ao validar a união."""
     rag_questions: list[AnsweredQuestion | UnansweredQuestion]
 
     @model_validator(mode="before")
     @classmethod
     def validate_answer_pairs(cls, value: object) -> object:
-        """Reject malformed answers before union fallback."""
+        """Rejeitar gabaritos inválidos antes da seleção do tipo na união."""
         if isinstance(value, dict):
             for question in value.get("rag_questions", []):
                 if isinstance(question, dict) and (
@@ -37,7 +37,7 @@ class RagDataset(BaseModel):
 
     @model_validator(mode="after")
     def validate_unique_ids(self) -> Self:
-        """Reject ambiguous question identifiers."""
+        """Rejeitar identificadores de perguntas duplicados."""
         ids = [question.question_id for question in self.rag_questions]
         if len(ids) != len(set(ids)):
             raise ValueError("question_id values must be unique")

@@ -1,11 +1,11 @@
-"""Modelos de index."""
+"""Modelos do manifesto e do relatório de indexação."""
 from pathlib import Path
 from typing import Literal
 from pydantic import BaseModel
 
 
 class IndexManifest(BaseModel):
-    """Metadados para detectar indices incompativeis ou desatualizados."""
+    """Metadados para detectar índices incompatíveis ou desatualizados."""
     format_version: str
     method: Literal["tfidf", "bm25"]
     max_chunk_size: int
@@ -15,7 +15,7 @@ class IndexManifest(BaseModel):
 
 
 class IndexReport(BaseModel):
-    """Resumo da indexacao e dos arquivos ignorados."""
+    """Resumo da indexação e dos arquivos ignorados."""
     indexed_files: int
     chunk_count: int
     skipped_files: list[str]

@@ -1,4 +1,4 @@
-"""Modelos de results."""
+"""Modelos públicos dos resultados de busca e das respostas."""
 from typing_extensions import Self
 from pydantic import BaseModel, Field, model_validator
 from src.models.source import MinimalSource
@@ -12,7 +12,7 @@ class MinimalSearchResults(BaseModel):
 
     @model_validator(mode="after")
     def validate_source_sizes(self) -> Self:
-        """Enforce the evaluator's limit only on retrieved sources."""
+        """Aplicar o limite do avaliador apenas às fontes recuperadas."""
         if any(
             source.last_character_index - source.first_character_index > 2000
             for source in self.retrieved_sources

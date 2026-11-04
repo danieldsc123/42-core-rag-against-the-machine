@@ -1,4 +1,4 @@
-"""Test the public CLI in subprocesses, including failure exit codes."""
+"""Testar a CLI em subprocessos, incluindo códigos de saída de falha."""
 import json
 from pathlib import Path
 import subprocess
@@ -8,13 +8,13 @@ import pytest
 
 
 def invoke(*args: str) -> subprocess.CompletedProcess[str]:
-    """Run the actual module entrypoint without a shell."""
+    """Executar a entrada real do módulo sem um interpretador de comandos."""
     return subprocess.run([sys.executable, '-m', 'src', *args],
                           capture_output=True, text=True, timeout=30)
 
 
 def test_end_to_end_search_and_evaluation(tmp_path: Path) -> None:
-    """Index files, search both scopes and evaluate output via CLI."""
+    """Indexar arquivos, buscar gabaritos e avaliar a saída pela CLI."""
     raw = tmp_path / 'raw'
     raw.mkdir()
     (raw / 'lora.md').write_text('LoRA adapters load dynamically.\n')
@@ -64,7 +64,7 @@ def test_end_to_end_search_and_evaluation(tmp_path: Path) -> None:
      '--save_directory', '/tmp/rag-unused'],
 ])
 def test_error_messages_without_tracebacks(args: list[str]) -> None:
-    """Missing files and invalid arguments fail clearly and nonzero."""
+    """Tratar arquivos ausentes e argumentos inválidos."""
     result = invoke(*args)
     assert result.returncode != 0
     assert 'Error:' in result.stderr and 'Traceback' not in result.stderr

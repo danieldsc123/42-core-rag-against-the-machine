@@ -1,4 +1,4 @@
-"""Coordinate corpus reading, distinct chunkers and sparse indexing."""
+"""Coordenar leitura, segmentação por tipo e indexação esparsa do corpus."""
 from pathlib import Path
 from time import perf_counter
 from typing import Literal, cast
@@ -23,10 +23,11 @@ def build_index(
     max_chunk_size: int = 2000,
     method: str = 'bm25',
 ) -> IndexReport:
-    """Build an index with progress, reporting unreadable files and timing.
+    """Construir o índice com progresso, duração e falhas de leitura.
 
-    Pack adjacent structural chunks to avoid indexing one-line statements
-    as isolated evidence; source offsets still refer to the original text.
+    Agrupar trechos estruturais adjacentes para evitar instruções de uma
+    linha como evidências isoladas. Os índices continuam relativos ao
+    texto original.
     """
     started = perf_counter()
     if not 1 <= max_chunk_size <= 2000:

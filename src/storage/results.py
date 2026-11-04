@@ -1,4 +1,4 @@
-"""Validated search-result loading and atomic JSON output."""
+"""Carregar resultados validados e gravar JSON de forma atômica."""
 import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -20,7 +20,7 @@ def write_results(
     results: BaseModel,
     output_path: Path,
 ) -> Path:
-    """Criar diretorio e gravar JSON validado sem deixar arquivo parcial."""
+    """Criar diretório e gravar JSON validado sem deixar arquivo parcial."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temporary: Path | None = None
     try:

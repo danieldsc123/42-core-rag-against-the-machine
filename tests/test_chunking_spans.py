@@ -1,4 +1,4 @@
-"""Verify interval boundaries and defensive chunk validation."""
+"""Verificar limites de intervalos e validações defensivas dos trechos."""
 import pytest
 
 from src.chunking.spans import split_span, validate_chunk
@@ -7,7 +7,7 @@ from src.models.source import MinimalSource
 
 
 def test_split_span_offsets() -> None:
-    """Keep nonzero offsets, a shorter last block and empty intervals."""
+    """Preservar índices iniciais, bloco final menor e intervalos vazios."""
     assert split_span('0123456789', 2, 9, 3) == [(2, 5), (5, 8), (8, 9)]
     assert split_span('', 0, 0, 2000) == []
 
@@ -16,7 +16,7 @@ def test_split_span_offsets() -> None:
     (-1, 2, 1), (2, 1, 1), (0, 4, 1), (0, 3, 0), (0, 3, 2001),
 ])
 def test_invalid_span(start: int, end: int, limit: int) -> None:
-    """Reject bad ranges and chunk sizes."""
+    """Rejeitar intervalos e tamanhos de trechos inválidos."""
     with pytest.raises(ValueError):
         split_span('abc', start, end, limit)
 
@@ -25,7 +25,7 @@ def test_invalid_span(start: int, end: int, limit: int) -> None:
     'none', 'path', 'empty', 'outside', 'size', 'text', 'kind', 'limit',
 ])
 def test_validate_chunk(error: str) -> None:
-    """Check valid slices and each failure independently of Pydantic."""
+    """Verificar recortes válidos e cada falha sem depender do Pydantic."""
     document = Document(file_path='data/raw/example.py', text='á🙂bc',
                         kind='python')
     source = MinimalSource(file_path=document.file_path,

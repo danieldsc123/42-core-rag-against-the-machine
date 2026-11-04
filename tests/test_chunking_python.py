@@ -1,4 +1,4 @@
-"""Check syntax boundaries and exact character coverage for Python."""
+"""Verificar limites sintáticos e cobertura exata dos caracteres Python."""
 import pytest
 
 from src.chunking.python import chunk_python
@@ -15,7 +15,7 @@ from src.models.documents import Document
 ])
 @pytest.mark.parametrize('limit', [1, 31, 2000])
 def test_exact_coverage(text: str, limit: int) -> None:
-    """Preserve all characters, including comments, CRLF and invalid code."""
+    """Preservar caracteres, comentários, CRLF e código inválido."""
     document = Document(file_path='data/raw/example.py', text=text,
                         kind='python')
     chunks = chunk_python(document, limit)
@@ -34,7 +34,7 @@ def test_exact_coverage(text: str, limit: int) -> None:
 
 
 def test_decorators_and_unicode_line_offsets() -> None:
-    """Attach all decorators and use character offsets after Unicode."""
+    """Preservar decoradores e índices em texto Unicode."""
     prefix = 'label = "á🙂"\r\n\r\n'
     definition = '@first\r\n@second(1)\r\nasync def café():\r\n    pass\r\n'
     document = Document(file_path='data/raw/example.py',
@@ -45,7 +45,7 @@ def test_decorators_and_unicode_line_offsets() -> None:
 
 
 def test_small_class_whole_and_large_class_split_at_methods() -> None:
-    """Inspect methods when the enclosing class exceeds the size limit."""
+    """Examinar métodos quando a classe ultrapassa o limite de tamanho."""
     first = '    def first(self):\n        return 1\n'
     second = '    def second(self):\n        return 2\n'
     text = 'class Example:\n' + first + second
@@ -59,7 +59,7 @@ def test_small_class_whole_and_large_class_split_at_methods() -> None:
 
 @pytest.mark.parametrize('limit', [0, -1, 2001])
 def test_invalid_limit(limit: int) -> None:
-    """Reject invalid size even for an empty Python file."""
+    """Rejeitar tamanhos inválidos mesmo em um arquivo Python vazio."""
     document = Document(file_path='data/raw/example.py', text='',
                         kind='python')
     with pytest.raises(ValueError):

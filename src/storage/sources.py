@@ -1,4 +1,4 @@
-"""Read validated source slices without altering original text."""
+"""Ler trechos de fontes validadas sem alterar o texto original."""
 from pathlib import Path
 
 from src.ingestion.paths import canonical_source_path
@@ -6,7 +6,7 @@ from src.models.source import MinimalSource
 
 
 def read_source(source: MinimalSource, project_root: Path) -> str:
-    """Reject path escapes and invalid character ranges before slicing."""
+    """Validar caminhos e intervalos antes de recortar o texto."""
     source = MinimalSource.model_validate(source.model_dump())
     root = project_root.resolve()
     target = (root / source.file_path).resolve()

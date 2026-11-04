@@ -1,4 +1,4 @@
-"""Character-span overlap and per-question recall metrics."""
+"""Métricas de sobreposição de intervalos e recall por pergunta."""
 from src.models.source import MinimalSource
 
 
@@ -6,7 +6,7 @@ def span_iou(
     left: MinimalSource,
     right: MinimalSource,
 ) -> float:
-    """Calcular intersecao/uniao; arquivos diferentes nao correspondem."""
+    """Calcular interseção/união; arquivos diferentes não correspondem."""
     if left.file_path != right.file_path:
         return 0.0
     intersection = max(

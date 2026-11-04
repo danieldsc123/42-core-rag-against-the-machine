@@ -1,1 +1,1 @@
-"""Contratos da funcionalidade models."""
+"""Modelos de dados e contratos do pipeline."""

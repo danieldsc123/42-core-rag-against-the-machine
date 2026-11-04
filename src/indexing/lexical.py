@@ -1,4 +1,4 @@
-"""Sparse TF-IDF/BM25 index with validated, pickle-free snapshots."""
+"""Índice esparso TF-IDF/BM25 com versões validadas, sem pickle."""
 import hashlib
 import json
 import shutil
@@ -17,13 +17,13 @@ from src.models.documents import RankedChunk
 
 
 class LexicalIndex:
-    """Encapsular ranking e persistencia sem expor bibliotecas ao pipeline."""
+    """Encapsular ranking e persistência sem expor bibliotecas ao pipeline."""
 
     def __init__(
         self,
         method: str = 'bm25',
     ) -> None:
-        """Validar metodo escolhido; nenhum modelo gerativo aqui."""
+        """Validar método escolhido; nenhum modelo gerativo aqui."""
         if method not in ('tfidf', 'bm25'):
             raise ValueError('method must be tfidf or bm25')
         self.method = method
@@ -37,7 +37,7 @@ class LexicalIndex:
         self,
         chunks: list[Chunk],
     ) -> None:
-        """Construir representacao lexical usando tokenize."""
+        """Construir representação lexical usando tokenize."""
         if not chunks:
             raise ValueError('cannot build an empty index')
         if len({chunk.chunk_id for chunk in chunks}) != len(chunks):
@@ -90,7 +90,7 @@ class LexicalIndex:
         query: str,
         k: int,
     ) -> list[RankedChunk]:
-        """Ordenar por relevancia com desempate deterministico."""
+        """Ordenar por relevância com desempate determinístico."""
         if not isinstance(query, str) or not query.strip():
             raise ValueError('query must not be empty')
         if not isinstance(k, int) or isinstance(k, bool) or k < 0:
@@ -121,7 +121,7 @@ class LexicalIndex:
         directory: Path,
         manifest: IndexManifest,
     ) -> None:
-        """Persistir chunks, vocabulario, estrutura de busca e manifesto."""
+        """Persistir chunks, vocabulário, estrutura de busca e manifesto."""
         if not self.chunks:
             raise ValueError('cannot save an unbuilt index')
         if (manifest.chunk_count != len(self.chunks)
@@ -168,7 +168,7 @@ class LexicalIndex:
         cls,
         directory: Path,
     ) -> 'LexicalIndex':
-        """Validar e carregar indice construido pelo proprio projeto."""
+        """Validar e carregar índice construido pelo próprio projeto."""
         name = (directory / 'CURRENT').read_text().strip()
         if not name.startswith('snapshot-') or Path(name).name != name:
             raise ValueError('invalid index snapshot pointer')

@@ -1,4 +1,4 @@
-"""Check exact source coverage and Markdown section boundaries."""
+"""Verificar cobertura exata das fontes e limites de seções Markdown."""
 import pytest
 
 from src.chunking.text import chunk_text
@@ -10,7 +10,7 @@ from src.models.documents import Document
 ])
 @pytest.mark.parametrize('limit', [1, 17, 2000])
 def test_exact_coverage(text: str, limit: int) -> None:
-    """Chunks cover the original once, with stable IDs and bounded sizes."""
+    """Cobrir o texto uma vez, com IDs estáveis e tamanhos limitados."""
     document = Document(file_path='data/raw/sample.md', text=text, kind='text')
     chunks = chunk_text(document, limit)
     assert ''.join(chunk.text for chunk in chunks) == text
@@ -28,7 +28,7 @@ def test_exact_coverage(text: str, limit: int) -> None:
 @pytest.mark.parametrize('heading', ['# Title', '   ### Title', '#',
                                      'Title\n=====', 'Title\n-----'])
 def test_heading_starts_section(heading: str) -> None:
-    """Recognize titles even without a preceding empty line."""
+    """Reconhecer títulos mesmo sem uma linha vazia antes deles."""
     text = 'Introduction\n' + heading + '\nBody'
     document = Document(file_path='data/raw/sample.md', text=text, kind='text')
     chunks = chunk_text(document, 2000)
@@ -38,7 +38,7 @@ def test_heading_starts_section(heading: str) -> None:
 
 @pytest.mark.parametrize('fence', ['```', '~~~~'])
 def test_fenced_code_stays_together(fence: str) -> None:
-    """Ignore apparent headings, blank lines and shorter fences in code."""
+    """Ignorar títulos aparentes, linhas vazias e cercas menores no código."""
     block = f'{fence}python\r\n# code\r\n\r\nx = 1\r\n'
     if fence == '~~~~':
         block += '~~~\r\n'
@@ -54,7 +54,7 @@ def test_fenced_code_stays_together(fence: str) -> None:
 
 
 def test_unclosed_fence_and_literal_hash() -> None:
-    """An unclosed fence protects its body; a bare word with # is text."""
+    """Preservar cercas abertas e palavras com # como texto."""
     text = '#not-a-title\ntext\n```\n# code\n\nmore'
     document = Document(file_path='data/raw/sample.md', text=text, kind='text')
     chunks = chunk_text(document, 2000)
@@ -65,7 +65,7 @@ def test_unclosed_fence_and_literal_hash() -> None:
 
 @pytest.mark.parametrize('limit', [0, -1, 2001])
 def test_invalid_limit_on_empty_document(limit: int) -> None:
-    """Validate the size even when there are no chunks to build."""
+    """Validar o tamanho mesmo quando não há trechos para construir."""
     document = Document(file_path='data/raw/sample.md', text='', kind='text')
     with pytest.raises(ValueError):
         chunk_text(document, limit)

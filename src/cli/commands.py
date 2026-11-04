@@ -1,4 +1,4 @@
-"""Python Fire commands coordinating the local RAG pipeline."""
+"""Comandos Python Fire que coordenam o fluxo RAG local."""
 from pathlib import Path
 
 from src.evaluation.service import evaluate_results
@@ -18,7 +18,7 @@ from src.storage.results import load_search_results, write_results
 
 
 class RagCLI:
-    """Coordenar servicos e transformar erros esperados em mensagens claras."""
+    """Coordenar serviços e apresentar erros esperados."""
 
     def index(
         self,
@@ -28,7 +28,7 @@ class RagCLI:
         project_root: str = '.',
         method: str = 'bm25',
     ) -> None:
-        """Construir indice e exibir resumo."""
+        """Construir índice e exibir resumo."""
         root = Path(project_root)
         corpus = Path(corpus_path)
         if not corpus.is_absolute():
@@ -79,7 +79,7 @@ class RagCLI:
         device: str = 'cpu',
         save_path: str = 'data/output/search_results_and_answer/single.json',
     ) -> Path:
-        """Buscar, preparar contexto, gerar e salvar resposta unica."""
+        """Buscar, preparar contexto, gerar e salvar resposta única."""
         index = LexicalIndex.load(Path(index_directory))
         result = search_question(UnansweredQuestion(question=query), index, k)
         config = GenerationConfig(
@@ -105,7 +105,7 @@ class RagCLI:
         max_new_tokens: int = 512,
         device: str = 'cpu',
     ) -> Path:
-        """Gerar respostas sobre fontes ja recuperadas, sem nova busca."""
+        """Gerar respostas sobre fontes já recuperadas, sem nova busca."""
         path = Path(student_search_results_path)
         results = load_search_results(path)
         generator = LocalGenerator(GenerationConfig(
@@ -125,7 +125,7 @@ class RagCLI:
         dataset_path: str,
         save_path: str = 'data/output/evaluation/report.json',
     ) -> Path:
-        """Calcular e salvar relatorio proprio de recall."""
+        """Calcular e salvar relatório próprio de recall."""
         results = load_search_results(Path(student_search_results_path))
         dataset = load_dataset(Path(dataset_path))
         report = evaluate_results(results, dataset)

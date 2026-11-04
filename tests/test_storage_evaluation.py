@@ -1,4 +1,4 @@
-"""Cover source boundaries, evaluation matching and atomic-write failures."""
+"""Testar limites das fontes, associação de perguntas e gravação atômica."""
 from pathlib import Path
 from unittest.mock import patch
 
@@ -14,7 +14,7 @@ from src.storage.sources import read_source
 
 
 def test_source_crlf_and_symlink_escape(tmp_path: Path) -> None:
-    """Offsets count characters and resolved paths must stay inside root."""
+    """Contar caracteres e manter os caminhos resolvidos dentro da raiz."""
     root = tmp_path / 'project'
     root.mkdir()
     (root / 'sample.txt').write_bytes('á🙂\r\nZ'.encode())
@@ -31,7 +31,7 @@ def test_source_crlf_and_symlink_escape(tmp_path: Path) -> None:
 
 
 def test_recall_matches_by_id_and_missing_is_zero() -> None:
-    """Count a reference once, not once per duplicate prediction source."""
+    """Contar referências sem duplicar os acertos."""
     source = MinimalSource(file_path='raw/a.md', first_character_index=0,
                            last_character_index=10)
     other = source.model_copy(update={'file_path': 'raw/b.md'})
@@ -59,7 +59,7 @@ def test_recall_matches_by_id_and_missing_is_zero() -> None:
 
 
 def test_atomic_write_preserves_previous_output(tmp_path: Path) -> None:
-    """A failed rename must leave prior results and no temporary files."""
+    """Preservar a saída e limpar temporários se a troca falhar."""
     output = tmp_path / 'results.json'
     output.write_text('previous')
     with patch.object(Path, 'replace', side_effect=OSError('disk failure')):

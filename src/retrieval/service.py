@@ -1,4 +1,4 @@
-"""Retrieval consumes only question IDs and query text, never answers."""
+"""Buscar usando apenas IDs e textos das perguntas, nunca os gabaritos."""
 from tqdm import tqdm
 
 from src.indexing.lexical import LexicalIndex
@@ -13,7 +13,7 @@ def search_question(
     index: LexicalIndex,
     k: int,
 ) -> MinimalSearchResults:
-    """Converter ranking em fontes validas de ate 2000 caracteres."""
+    """Converter ranking em fontes válidas de até 2000 caracteres."""
     ranked = index.search(question.question, k)
     return MinimalSearchResults(
         question_id=question.question_id, question=question.question,
@@ -26,7 +26,7 @@ def search_dataset(
     index: LexicalIndex,
     k: int,
 ) -> StudentSearchResults:
-    """Usar somente question_id e question, com indice carregado uma vez."""
+    """Usar somente question_id e question, com índice carregado uma vez."""
     if k < 0:
         raise ValueError('k must be nonnegative')
     results = [

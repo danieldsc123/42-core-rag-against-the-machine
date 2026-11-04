@@ -1,4 +1,4 @@
-"""Shared identifier-aware lexical tokenization for queries and documents."""
+"""Tokenização lexical de textos e identificadores."""
 import re
 
 TOKENIZER_VERSION = 'identifier-v1'
@@ -9,7 +9,7 @@ STOP_WORDS = frozenset('''a an and are as at be been being by can could did do
 
 
 def tokenize(text: str) -> list[str]:
-    """Keep full identifiers and their snake/camel components, in order."""
+    """Manter identificadores completos e suas partes snake/camel em ordem."""
     tokens: list[str] = []
     for word in re.findall(r'\w+', text, flags=re.UNICODE):
         full = word.casefold()

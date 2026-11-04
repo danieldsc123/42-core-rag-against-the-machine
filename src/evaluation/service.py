@@ -1,4 +1,4 @@
-"""Evaluate saved search results by question ID, without external graders."""
+"""Avaliar buscas salvas pelo ID da pergunta, sem avaliadores externos."""
 from src.evaluation.metrics import question_recall
 from src.models.evaluation import EvaluationReport
 from src.models.questions import AnsweredQuestion, RagDataset
@@ -11,7 +11,7 @@ def evaluate_results(
     ks: tuple[int, ...] = (1, 3, 5, 10),
     iou_threshold: float = 0.05,
 ) -> EvaluationReport:
-    """Average per-question recalls, counting missing predictions as zero."""
+    """Calcular o recall médio, contando resultados ausentes como zero."""
     if any(k < 0 for k in ks) or not 0 < iou_threshold <= 1:
         raise ValueError('invalid recall cutoffs or IoU threshold')
     references: dict[str, AnsweredQuestion] = {}

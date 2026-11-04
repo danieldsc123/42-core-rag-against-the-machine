@@ -9,7 +9,7 @@ def split_span(
     end: int,
     max_chunk_size: int,
 ) -> list[tuple[int, int]]:
-    """Subdividir intervalo grande sem perder posicoes no documento."""
+    """Subdividir intervalo grande sem perder posições no documento."""
 
     if not 1 <= max_chunk_size <= 2000:
         raise ValueError('max_chunk_size deve estar entre 1 e 2000')
@@ -32,7 +32,7 @@ def validate_chunk(
     document: Document,
     max_chunk_size: int,
 ) -> None:
-    """Validar limites, tamanho e igualdade com o slice original."""
+    """Validar limites, tamanho e igualdade com o recorte original."""
 
     if not 1 <= max_chunk_size <= 2000:
         raise ValueError('max_chunk_size deve estar entre 1 e 2000')

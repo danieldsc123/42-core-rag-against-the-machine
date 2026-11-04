@@ -1,4 +1,4 @@
-"""Exercise prompt budgets and abstention without downloading a model."""
+"""Testar orçamento do prompt e abstenção sem baixar um modelo."""
 import json
 from typing import Any
 
@@ -13,21 +13,21 @@ from src.models.source import MinimalSource
 
 
 class CharacterTokenizer:
-    """Deterministic stand-in so budget boundary cases are reproducible."""
+    """Simular o tokenizer para reproduzir casos de limite do orçamento."""
 
     def encode(self, text: str, **kwargs: Any) -> list[int]:
-        """Count a character as one token in these isolated tests."""
+        """Contar cada caractere como um token nestes testes isolados."""
         return list(range(len(text)))
 
     def apply_chat_template(self, messages: list[dict[str, str]],
                             **kwargs: Any) -> str:
-        """Include system and user messages plus generation overhead."""
+        """Incluir mensagens de sistema, usuário e marcadores de geração."""
         assert kwargs['enable_thinking'] is False
         return json.dumps(messages, ensure_ascii=False) + '<assistant>'
 
 
 def test_context_budget_and_selected_sources() -> None:
-    """Skip large evidence and retain fitting sources within the budget."""
+    """Ignorar evidências grandes e manter fontes que cabem no orçamento."""
     generator = LocalGenerator(GenerationConfig(
         context_window_tokens=1300, max_new_tokens=100,
     ))
@@ -55,7 +55,7 @@ def test_context_budget_and_selected_sources() -> None:
 
 
 def test_empty_results_abstain_without_loading_model() -> None:
-    """Empty batches and k=0 preserve IDs and require no model download."""
+    """Preservar IDs sem baixar modelos para lotes vazios e k=0."""
     generator = LocalGenerator(GenerationConfig())
     results = StudentSearchResults(search_results=[MinimalSearchResults(
         question_id='q1', question='Why?', retrieved_sources=[],

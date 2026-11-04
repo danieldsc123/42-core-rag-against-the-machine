@@ -1,1 +1,1 @@
-"""Contratos da funcionalidade chunking."""
+"""Segmentação de documentos em trechos."""

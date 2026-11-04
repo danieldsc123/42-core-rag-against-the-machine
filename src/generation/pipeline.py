@@ -1,4 +1,4 @@
-"""Answer previously retrieved evidence with a reusable local generator."""
+"""Responder com evidências recuperadas e um gerador local reutilizável."""
 from pathlib import Path
 
 from tqdm import tqdm
@@ -17,7 +17,7 @@ def answer_search_result(
     generator: LocalGenerator,
     project_root: str,
 ) -> MinimalAnswer:
-    """Ler os slices recuperados e gerar resposta fundamentada."""
+    """Ler os trechos recuperados e gerar uma resposta fundamentada."""
     context: list[Chunk] = []
     for source in result.retrieved_sources:
         text = read_source(source, Path(project_root))

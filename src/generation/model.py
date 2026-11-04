@@ -1,4 +1,4 @@
-"""Lazy local Qwen generation with exact tokenizer-based context budgets."""
+"""Gerar com Qwen local, carregamento adiado e orçamento de tokens exato."""
 import gc
 import json
 import os
@@ -10,13 +10,13 @@ from src.models.generation import PreparedPrompt
 
 
 class LocalGenerator:
-    """Carregar modelo e tokenizer uma vez por execucao de geracao."""
+    """Carregar modelo e tokenizer uma vez por execução de geração."""
 
     def __init__(
         self,
         config: GenerationConfig,
     ) -> None:
-        """Guardar configuracao; nao carregar modelo ao importar modulo."""
+        """Guardar configuração; não carregar modelo ao importar módulo."""
         self.config = config
         self.tokenizer: Any = None
         self.model: Any = None
@@ -67,7 +67,7 @@ class LocalGenerator:
         question: str,
         context: list[Chunk],
     ) -> PreparedPrompt:
-        """Selecionar chunks dentro do budget, incluindo template e saida."""
+        """Selecionar trechos no orçamento, incluindo o template e a saída."""
         if not question.strip():
             raise ValueError('question must not be empty')
         self.load()
@@ -80,7 +80,7 @@ class LocalGenerator:
         )
 
         def render(selected: list[Chunk]) -> str:
-            """Render evidence as data using the actual model chat template."""
+            """Formatar evidências com o template de conversa real."""
             evidence = [
                 {'source': i + 1, 'path': chunk.source.file_path,
                  'start': chunk.source.first_character_index,
@@ -121,7 +121,7 @@ class LocalGenerator:
         self,
         prompt: PreparedPrompt,
     ) -> str:
-        """Gerar somente continuacao/resposta, respeitando max_new_tokens."""
+        """Gerar somente continuação/resposta, respeitando max_new_tokens."""
         if not prompt.sources:
             return 'The supplied sources do not contain enough information.'
         self.load()
@@ -152,7 +152,7 @@ class LocalGenerator:
     def close(
         self,
     ) -> None:
-        """Liberar recursos quando necessario."""
+        """Liberar recursos quando necessário."""
         had_model = self.model is not None
         self.model = None
         self.tokenizer = None

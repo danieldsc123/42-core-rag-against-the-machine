@@ -1,1 +1,1 @@
-"""Contratos da funcionalidade retrieval."""
+"""Recuperação de fontes para perguntas."""

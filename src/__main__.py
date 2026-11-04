@@ -1,4 +1,4 @@
-"""Expose the local RAG CLI with concise, nonzero-exit error reporting."""
+"""Disponibilizar a CLI RAG com mensagens de erro e código de saída."""
 import sys
 
 import fire
@@ -7,7 +7,7 @@ from src.cli.commands import RagCLI
 
 
 def status() -> str:
-    """Report which project components are currently implemented."""
+    """Informar os componentes disponíveis no projeto."""
     return (
         "Ready: index, search, search_dataset, answer, answer_dataset, "
         "evaluate. Generation uses local Qwen/Qwen3-0.6B; "
@@ -16,7 +16,7 @@ def status() -> str:
 
 
 def main() -> None:
-    """Dispatch commands and report failures without unhandled tracebacks."""
+    """Executar comandos e apresentar falhas tratadas."""
     cli = RagCLI()
     commands = {
         'index': cli.index, 'search': cli.search,

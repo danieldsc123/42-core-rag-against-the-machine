@@ -1,1 +1,1 @@
-"""Contratos da funcionalidade ingestion."""
+"""Descoberta e leitura dos arquivos do corpus."""

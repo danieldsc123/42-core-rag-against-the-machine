@@ -1,1 +1,1 @@
-"""Contratos da funcionalidade generation."""
+"""Geração local de respostas."""

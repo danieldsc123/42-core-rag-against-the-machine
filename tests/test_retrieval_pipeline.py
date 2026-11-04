@@ -1,4 +1,4 @@
-"""Exercise sparse ranking, persistence and the real file-based pipeline."""
+"""Testar ranking esparso, persistência e fluxo real baseado em arquivos."""
 from pathlib import Path
 
 import pytest
@@ -17,7 +17,7 @@ from src.storage.results import load_search_results, write_results
 def test_index_roundtrip_and_ground_truth_isolation(
     tmp_path: Path, method: str,
 ) -> None:
-    """Reproduce rankings after reload without using reference answers."""
+    """Reproduzir rankings após recarga sem usar respostas de referência."""
     corpus = tmp_path / 'raw'
     corpus.mkdir()
     (corpus / 'lora.md').write_text('LoRA adapters load dynamically.\n')
@@ -59,7 +59,7 @@ def test_index_roundtrip_and_ground_truth_isolation(
 
 
 def test_empty_and_unreadable_corpus(tmp_path: Path) -> None:
-    """A wholly unusable corpus must fail instead of creating an index."""
+    """Rejeitar a indexação de um corpus inteiramente inutilizável."""
     with pytest.raises(ValueError, match='empty index'):
         build_index(tmp_path, tmp_path / 'index', tmp_path)
     (tmp_path / 'bad.txt').write_bytes(b'\xff')
