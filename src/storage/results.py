@@ -1,4 +1,4 @@
-"""Prototipos de storage.results; sem implementacao."""
+"""Validated search-result loading and atomic JSON output."""
 from pathlib import Path
 from src.models.results import StudentSearchResults
 from src.models.results import StudentSearchResultsAndAnswer
@@ -8,7 +8,9 @@ def load_search_results(
     path: Path,
 ) -> StudentSearchResults:
     """Validar resultados antes de gerar respostas ou avaliar."""
-    raise NotImplementedError('Implementar: load_search_results')
+    return StudentSearchResults.model_validate_json(
+        path.read_text(encoding='utf-8')
+    )
 
 
 def write_results(
