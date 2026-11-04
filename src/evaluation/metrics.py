@@ -26,4 +26,13 @@ def question_recall(
     iou_threshold: float = 0.05,
 ) -> float:
     """Contar cada fonte esperada uma vez quando encontrada nos top-k."""
-    raise NotImplementedError('Implementar: question_recall')
+    if k < 0 or not 0 < iou_threshold <= 1:
+        raise ValueError('invalid k or IoU threshold')
+    if not expected:
+        raise ValueError('reference question must contain at least one source')
+    found = sum(
+        any(span_iou(actual, reference) >= iou_threshold
+            for actual in retrieved[:k])
+        for reference in expected
+    )
+    return found / len(expected)
