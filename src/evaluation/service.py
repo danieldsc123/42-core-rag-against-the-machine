@@ -17,7 +17,9 @@ def evaluate_results(
     references: dict[str, AnsweredQuestion] = {}
     for question in ground_truth.rag_questions:
         if not isinstance(question, AnsweredQuestion) or not question.sources:
-            raise ValueError('evaluation requires answered reference questions')
+            raise ValueError(
+                'evaluation requires answered reference questions'
+            )
         references[question.question_id] = question
     predictions = {r.question_id: r for r in results.search_results}
     if len(predictions) != len(results.search_results):
