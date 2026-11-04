@@ -106,7 +106,18 @@ class RagCLI:
         device: str = 'cpu',
     ) -> Path:
         """Gerar respostas sobre fontes ja recuperadas, sem nova busca."""
-        raise NotImplementedError('Implementar: answer_dataset')
+        path = Path(student_search_results_path)
+        results = load_search_results(path)
+        generator = LocalGenerator(GenerationConfig(
+            model_name=model_name, context_window_tokens=context_window_tokens,
+            max_new_tokens=max_new_tokens, device=device,
+        ))
+        try:
+            answers = answer_dataset(results, generator, project_root)
+        finally:
+            generator.close()
+        output = dataset_output_path(path, Path(save_directory))
+        return write_results(answers, output)
 
     def evaluate(
         self,
