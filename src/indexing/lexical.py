@@ -1,4 +1,5 @@
 """Sparse TF-IDF/BM25 index with validated, pickle-free snapshots."""
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -33,7 +34,52 @@ class LexicalIndex:
         chunks: list[Chunk],
     ) -> None:
         """Construir representacao lexical usando tokenize."""
-        raise NotImplementedError('Implementar: build')
+        if not chunks:
+            raise ValueError('cannot build an empty index')
+        if len({chunk.chunk_id for chunk in chunks}) != len(chunks):
+            raise ValueError('duplicate chunk IDs')
+        self.chunks = chunks
+        self.vocabulary = {}
+        rows: list[int] = []
+        columns: list[int] = []
+        values: list[float] = []
+        for row, chunk in enumerate(chunks):
+            path = chunk.source.file_path
+            counts = Counter(tokenize(chunk.text) + tokenize(path))
+            for token, count in counts.items():
+                column = self.vocabulary.setdefault(
+                    token, len(self.vocabulary)
+                )
+                rows.append(row)
+                columns.append(column)
+                values.append(float(count))
+        if not self.vocabulary:
+            raise ValueError('corpus contains no searchable terms')
+        matrix = sparse.csr_matrix(
+            (values, (rows, columns)),
+            shape=(len(chunks), len(self.vocabulary)), dtype=np.float64,
+        )
+        frequencies = np.asarray((matrix > 0).sum(axis=0)).ravel()
+        count = len(chunks)
+        if self.method == 'bm25':
+            self.idf = np.log1p(
+                (count - frequencies + 0.5) / (frequencies + 0.5)
+            )
+            lengths = np.asarray(matrix.sum(axis=1)).ravel()
+            normalizer = 1.2 * (0.25 + 0.75 * lengths / lengths.mean())
+            matrix = matrix.tocoo()
+            matrix.data = (
+                self.idf[matrix.col] * matrix.data * 2.2
+                / (matrix.data + normalizer[matrix.row])
+            )
+            self.matrix = matrix.tocsr()
+        else:
+            self.idf = np.log((1 + count) / (1 + frequencies)) + 1
+            matrix.data = 1 + np.log(matrix.data)
+            matrix = matrix.multiply(self.idf).tocsr()
+            norms = np.sqrt(np.asarray(matrix.power(2).sum(axis=1)).ravel())
+            self.matrix = sparse.diags(1 / np.maximum(norms, 1e-12)) @ matrix
+        self.matrix.sort_indices()
 
     def search(
         self,
