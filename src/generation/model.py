@@ -41,7 +41,7 @@ class LocalGenerator:
             self.config.model_name, trust_remote_code=False
         )
         model = AutoModelForCausalLM.from_pretrained(
-            self.config.model_name, torch_dtype='auto', trust_remote_code=False
+            self.config.model_name, dtype='auto', trust_remote_code=False
         )
         model.to(self.config.device)
         model.eval()
@@ -121,7 +121,31 @@ class LocalGenerator:
         prompt: PreparedPrompt,
     ) -> str:
         """Gerar somente continuacao/resposta, respeitando max_new_tokens."""
-        raise NotImplementedError('Implementar: generate')
+        if not prompt.sources:
+            return 'The supplied sources do not contain enough information.'
+        self.load()
+        import torch
+
+        inputs = self.tokenizer(
+            prompt.text, return_tensors='pt', add_special_tokens=False
+        ).to(self.config.device)
+        input_length = int(inputs['input_ids'].shape[1])
+        if (input_length != prompt.input_tokens
+                or input_length + self.config.max_new_tokens
+                > self.context_limit):
+            raise ValueError('prepared prompt exceeds token budget')
+        with torch.inference_mode():
+            output = self.model.generate(
+                **inputs, max_new_tokens=self.config.max_new_tokens,
+                do_sample=False, pad_token_id=self.tokenizer.eos_token_id,
+            )
+        continuation = output[0, input_length:]
+        answer = str(self.tokenizer.decode(
+            continuation, skip_special_tokens=True
+        )).strip()
+        return answer or (
+            'The supplied sources do not contain enough information.'
+        )
 
     def close(
         self,
