@@ -177,7 +177,9 @@ class LexicalIndex:
                  'matrix.npz', 'idf.npy']
         hashes = json.loads((snapshot / 'checksums.json').read_text())
         for name in files:
-            digest = hashlib.sha256((snapshot / name).read_bytes()).hexdigest()
+            digest = hashlib.sha256(
+                (snapshot / name).read_bytes()
+            ).hexdigest()
             if hashes.get(name) != digest:
                 raise ValueError(f'index checksum mismatch: {name}')
         manifest = IndexManifest.model_validate_json(
@@ -206,7 +208,8 @@ class LexicalIndex:
                 or not np.isfinite(index.matrix.data).all()
                 or not np.isfinite(index.idf).all()
                 or (index.matrix.data < 0).any()
-                or len({c.chunk_id for c in index.chunks}) != len(index.chunks)):
+                or len({c.chunk_id for c in index.chunks})
+                != len(index.chunks)):
             raise ValueError('invalid index dimensions or weights')
         for chunk in index.chunks:
             size = (chunk.source.last_character_index
