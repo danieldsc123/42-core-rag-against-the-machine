@@ -31,7 +31,8 @@ class LocalGenerator:
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
-        if self.config.device.startswith('cuda') and not torch.cuda.is_available():
+        if (self.config.device.startswith('cuda')
+                and not torch.cuda.is_available()):
             raise ValueError('CUDA requested but not available')
         threads = int(os.environ.get('RAG_TORCH_THREADS', '4'))
         if threads < 1:

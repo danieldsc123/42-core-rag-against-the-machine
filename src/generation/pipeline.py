@@ -1,5 +1,9 @@
-"""Prototipos de generation.pipeline; sem implementacao."""
+"""Answer previously retrieved evidence with a reusable local generator."""
+from pathlib import Path
+
 from src.generation.model import LocalGenerator
+from src.models.documents import Chunk
+from src.storage.sources import read_source
 from src.models.results import MinimalAnswer
 from src.models.results import MinimalSearchResults
 from src.models.results import StudentSearchResults
@@ -12,7 +16,26 @@ def answer_search_result(
     project_root: str,
 ) -> MinimalAnswer:
     """Ler os slices recuperados e gerar resposta fundamentada."""
-    raise NotImplementedError('Implementar: answer_search_result')
+    context: list[Chunk] = []
+    for source in result.retrieved_sources:
+        text = read_source(source, Path(project_root))
+        context.append(Chunk(
+            chunk_id=(f'{source.file_path}:{source.first_character_index}:'
+                      f'{source.last_character_index}'),
+            source=source, text=text,
+            kind='python' if source.file_path.endswith('.py') else 'text',
+        ))
+    if context:
+        prompt = generator.prepare_prompt(result.question, context)
+        answer = generator.generate(prompt)
+        sources = prompt.sources
+    else:
+        answer = 'The supplied sources do not contain enough information.'
+        sources = []
+    return MinimalAnswer(
+        question_id=result.question_id, question=result.question,
+        retrieved_sources=sources, answer=answer,
+    )
 
 
 def answer_dataset(
