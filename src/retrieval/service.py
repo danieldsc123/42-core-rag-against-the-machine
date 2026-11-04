@@ -1,4 +1,6 @@
 """Retrieval consumes only question IDs and query text, never answers."""
+from tqdm import tqdm
+
 from src.indexing.lexical import LexicalIndex
 from src.models.results import MinimalSearchResults
 from src.models.questions import RagDataset
@@ -25,4 +27,11 @@ def search_dataset(
     k: int,
 ) -> StudentSearchResults:
     """Usar somente question_id e question, com indice carregado uma vez."""
-    raise NotImplementedError('Implementar: search_dataset')
+    if k < 0:
+        raise ValueError('k must be nonnegative')
+    results = [
+        search_question(question, index, k)
+        for question in tqdm(dataset.rag_questions, desc='Searching',
+                             unit='question')
+    ]
+    return StudentSearchResults(search_results=results, k=k)
