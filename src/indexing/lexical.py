@@ -87,7 +87,30 @@ class LexicalIndex:
         k: int,
     ) -> list[RankedChunk]:
         """Ordenar por relevancia com desempate deterministico."""
-        raise NotImplementedError('Implementar: search')
+        if not isinstance(query, str) or not query.strip():
+            raise ValueError('query must not be empty')
+        if not isinstance(k, int) or isinstance(k, bool) or k < 0:
+            raise ValueError('k must be a nonnegative integer')
+        if not self.chunks:
+            raise ValueError('index has not been built')
+        if k == 0:
+            return []
+        counts = Counter(tokenize(query))
+        columns = [self.vocabulary[t] for t in counts
+                   if t in self.vocabulary]
+        if not columns:
+            return []
+        weights = np.array([
+            counts[t] for t in counts if t in self.vocabulary
+        ], dtype=np.float64)
+        if self.method == 'tfidf':
+            weights = (1 + np.log(weights)) * self.idf[columns]
+            weights /= max(float(np.linalg.norm(weights)), 1e-12)
+        scores = np.asarray(self.matrix[:, columns] @ weights).ravel()
+        candidates = np.flatnonzero(scores > 0)
+        ordered = candidates[np.lexsort((candidates, -scores[candidates]))]
+        return [RankedChunk(chunk=self.chunks[int(i)], score=float(scores[i]))
+                for i in ordered[:k]]
 
     def save(
         self,
