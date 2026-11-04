@@ -26,7 +26,32 @@ class LocalGenerator:
         self,
     ) -> None:
         """Carregar Qwen/Qwen3-0.6B e seu tokenizer."""
-        raise NotImplementedError('Implementar: load')
+        if self.model is not None:
+            return
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+
+        if self.config.device.startswith('cuda') and not torch.cuda.is_available():
+            raise ValueError('CUDA requested but not available')
+        threads = int(os.environ.get('RAG_TORCH_THREADS', '4'))
+        if threads < 1:
+            raise ValueError('RAG_TORCH_THREADS must be positive')
+        torch.set_num_threads(threads)
+        tokenizer = AutoTokenizer.from_pretrained(
+            self.config.model_name, trust_remote_code=False
+        )
+        model = AutoModelForCausalLM.from_pretrained(
+            self.config.model_name, torch_dtype='auto', trust_remote_code=False
+        )
+        model.to(self.config.device)
+        model.eval()
+        limit = int(getattr(model.config, 'max_position_embeddings',
+                            self.config.context_window_tokens))
+        self.context_limit = min(self.config.context_window_tokens, limit)
+        if self.config.max_new_tokens >= self.context_limit:
+            raise ValueError('output budget exceeds model context limit')
+        self.tokenizer = tokenizer
+        self.model = model
 
     def count_tokens(
         self,
