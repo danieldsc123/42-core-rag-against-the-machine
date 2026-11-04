@@ -57,7 +57,10 @@ of search results and reference answers. Each functionality has its own folder u
 Implemented for text: paragraph boundaries, ATX/Setext Markdown headings and
 fenced code blocks, with subdivision of oversized spans. Original character
 offsets are preserved and chunks are limited to at most 2000 characters.
-Python syntax chunking remains pending.
+Python chunking uses AST statement and definition boundaries, keeps decorators
+with definitions and inspects nested blocks when a parent is too large.
+Line-based character offsets avoid AST byte-column errors. Invalid syntax falls
+back to text chunking, preserving all source characters.
 
 ## Retrieval method
 

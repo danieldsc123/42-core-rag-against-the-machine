@@ -6,7 +6,8 @@ a divisão interna abaixo é uma decisão de organização do projeto.
 
 Todos os módulos planejados para o obrigatório já existem como `.py`. Não é
 necessário criar um arquivo novo para cada etapa deste roteiro. Os modelos e
-o leitor estão implementados; os demais serviços têm protótipos executáveis que
+o leitor, a descoberta de arquivos, os caminhos e o chunking estão implementados;
+os demais serviços têm protótipos executáveis que
 levantam `NotImplementedError`. Isso sinaliza trabalho pendente, não uma solução
 funcional. Para implementar, substitua esse `raise` pelo corpo da função.
 
@@ -47,7 +48,7 @@ avaliação: não alimentar o índice ou o ranking com respostas de referência.
 | 3 | `ingestion/paths.py` | Centralizar caminho relativo POSIX | Implementado |
 | 4 | `chunking/spans.py` | Subdividir intervalos e validar chunks | Implementado |
 | 5 | `chunking/text.py` | Separar Markdown/texto por seções e parágrafos | Implementado |
-| 6 | `chunking/python.py` | Separar código por limites sintáticos | Protótipo |
+| 6 | `chunking/python.py` | Separar código por limites sintáticos | Implementado |
 | 7 | `indexing/tokenizer.py` | Tokenização comum a documentos e consultas | Protótipo |
 | 8 | `indexing/lexical.py` | Construir, consultar, salvar e carregar índice | Protótipo |
 | 9 | `indexing/pipeline.py` | Coordenar ingestão, chunks e índice com tqdm | Protótipo |

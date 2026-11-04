@@ -101,3 +101,17 @@ assinaturas, docstrings e `NotImplementedError`. Implementações existentes for
 preservadas. Os serviços continuam pendentes; o novo mapa em ARQUITETURA.md
 relaciona os módulos aos requisitos e define a ordem de implementação.
 Esta seção atualiza as referências históricas a serviços mantidos como `.pyi`.
+
+## Chunking concluído
+
+Implementados split_span, validate_chunk, chunk_text e chunk_python. Python usa
+AST, preserva decoradores e definições pequenas, subdivide blocos grandes e
+recorre a texto quando o parser não aceita o arquivo. Comentários e código de
+módulo permanecem cobertos. Títulos e cercas Markdown pertencem ao chunking
+textual. Nenhuma etapa altera o documento original.
+
+Validação: 88 testes e lint. No corpus, foram verificados 1.763 arquivos Python
+(115.973 chunks) e 206 arquivos de texto (6.864 chunks), com reconstrução exata
+e intervalos contíguos de até 2.000 caracteres, em aproximadamente 5,17 segundos
+neste ambiente. Isso mede leitura/chunking, não indexação nem recall; a quantidade
+e o tamanho dos chunks ainda poderão ser ajustados após medir a busca.
